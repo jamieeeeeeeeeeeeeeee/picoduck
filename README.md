@@ -42,7 +42,7 @@ Hit "OK".
                 |script.dd    | .....           |
                 |             |       ...  ..   |
 (SCRLL DWN)   B |             |                 | Y  (EXECUTE)
-(ADD AUTORUN   +--------------------------------+
+(ADD AUTORUN)   +--------------------------------+
 ```
 
 **Button A:**
