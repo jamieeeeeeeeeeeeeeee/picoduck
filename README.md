@@ -62,7 +62,7 @@ Supported commands are:
 
 Unsupported commands:
 * MENU / APP 
-* MOUSE COMMANDS! Mouse support is implemented, but commands are not!
+* Mouse support is implemented, but commands are not!
 * DEL
 * DEFAULT_DELAY / DEFAULTDELAY
 * The Button / LED / ATTACKMODE / Logical Operations etc..
