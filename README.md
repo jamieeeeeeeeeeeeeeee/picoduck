@@ -1,7 +1,7 @@
 # Installation Instructions #
 You can either use the pre-compiled .uf2 files (inside the build directory) or compile the source code yourself.
 
-### Pre-compiled .uf2 files ###
+## Pre-compiled .uf2 files ##
 1. Download the correct .uf2 file for your hardware from the Releases tab. Pre-compiled .uf2 files support the following hardware combinations:
     * No Display + Pico
     * No Display + Picow
@@ -11,7 +11,7 @@ You can either use the pre-compiled .uf2 files (inside the build directory) or c
 3. Drag and drop your chosen .uf2 file onto the Pico's drive.
 4. That's it! Your Pico will show as a USB device on your computer.
 
-### Compiling the source code yourself ###
+## Compiling the source code yourself ##
 1. Download the source code onto your computer.
 2. Download the Arduino IDE from https://www.arduino.cc/en/software
 3. Open the Arduino IDE and go to File->Preferences and add the following URL to "Additional Boards Manager URLs": 
