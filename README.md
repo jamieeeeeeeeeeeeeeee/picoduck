@@ -43,7 +43,7 @@ The source code is split into 4 main sections:
 This main file which handles USB communication, autorunning scripts, the display, and buttons.
 
 ### The DuckyScript Interpreter (ducky.hpp) ###
-This file interprets DuckyScripts and executes them. It uses this command list for reference > https://docs.hak5.org/hak5-usb-rubber-ducky/duckyscript-tm-quick-reference. 
+This file interprets DuckyScripts and executes them. It uses this command list for reference > https://docs.hak5.org/hak5-usb-rubber-ducky/duckyscript-tm-quick-reference 
 
 Supported commands are:
 * REM 
