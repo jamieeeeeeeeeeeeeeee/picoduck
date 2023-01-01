@@ -1,261 +1,345 @@
-#include "common.h"
-#include "lua_api.h"
+#include "picoduck.hpp"
+#include "ducky.hpp"
+#include "commands.hpp"
 
-#include "SPI.h"
-#include "SdFat.h"
-
-#include "Adafruit_SPIFlash.h"
-
-#include "ff.h"
-#include "diskio.h"
-
-#define DISK_LABEL "Picoduck"
-
-Adafruit_FlashTransport_RP2040 flashTransport;
-
-bool usb_mass_storage = false;
-
-Adafruit_SPIFlash flash(&flashTransport);
-
-void format_fat12(void) {
-  // Working buffer for f_mkfs.
-  uint8_t workbuf[4096];
-
-  // Elm Cham's fatfs objects
-  FATFS elmchamFatfs;
-
-  // Make filesystem.
-  FRESULT r = f_mkfs("", FM_FAT, 0, workbuf, sizeof(workbuf));
-  if (r != FR_OK) {
-    Serial.print(F("Error, f_mkfs failed with error code: ")); Serial.println(r, DEC);
-    while(1) yield();
-  }
-
-  // mount to set disk label
-  r = f_mount(&elmchamFatfs, "0:", 1);
-  if (r != FR_OK) {
-    Serial.print(F("Error, f_mount failed with error code: ")); Serial.println(r, DEC);
-    while(1) yield();
-  }
-
-  // Setting label
-  Serial.println(F("Setting disk label to: " DISK_LABEL));
-  r = f_setlabel(DISK_LABEL);
-  if (r != FR_OK) {
-    Serial.print(F("Error, f_setlabel failed with error code: ")); Serial.println(r, DEC);
-    while(1) yield();
-  }
-
-  // unmount
-  f_unmount("0:");
-
-  // sync to make sure all data is written to flash
-  flash.syncBlocks();
-
-  Serial.println(F("Formatted flash!"));
-}
-
-// file system object from SdFat
-FatVolume fatfs;
-
-Adafruit_USBD_MSC usb_msc;
-
-// Check if flash is formatted
-bool fs_formatted;
-
-byte get_program_index_from_pins() {
-  byte final = 0;
-  if (digitalRead(PIN_B0) == HIGH) final += 1;
-  if (digitalRead(PIN_B1) == HIGH) final += 2;
-  if (digitalRead(PIN_B2) == HIGH) final += 4;
-  if (digitalRead(PIN_B3) == HIGH) final += 8;
-  return final;
-}
-
-int32_t msc_read_cb (uint32_t lba, void* buffer, uint32_t bufsize) {
-  return flash.readBlocks(lba, (uint8_t*) buffer, bufsize/512) ? bufsize : -1;
-}
-
-int32_t msc_write_cb (uint32_t lba, uint8_t* buffer, uint32_t bufsize) {
-  digitalWrite(LED_BUILTIN, HIGH);
-  return flash.writeBlocks(lba, buffer, bufsize/512) ? bufsize : -1;
-}
-
-void msc_flush_cb (void) {
-  flash.syncBlocks();
-  fatfs.cacheClear();
-  digitalWrite(LED_BUILTIN, LOW);
-}
-
-void led_loop(int rate=1000) {
-  for (;;) {
-    digitalWrite(BUILT_IN_LED_PIN, HIGH);
-    delay(rate);
-    digitalWrite(BUILT_IN_LED_PIN, LOW);
-    delay(rate);
-  }
-}
-
+// setup
 void setup() {
-  Serial.begin(9600);
-  
-  pinMode(BUILT_IN_LED_PIN, OUTPUT);
-  pinMode(EXTERNAL_LED_PIN, OUTPUT);
+  // check for autorun
+  autorun = false;
+  #if USB_DISPLAY == PICO_DISPLAY_2
+  if (!(button_a.raw() || button_b.raw() || button_x.raw() || button_y.raw()))
+  /*
+  #elif USB_DISPLAY == CUSTOM_DISPLAY
+  // define your method of checking for autorun here
+  */
+  #endif
+    autorun = true;
+  #if USB_DISPLAY == PICO_DISPLAY_2
+  // turn on backlight so we know autorun check is complete (and we no longer have to hold button)
+  display.set_backlight(255);
+  #endif
 
-  // Random seed from ADC noise.
-  pinMode(26, INPUT);
-  srand(analogRead(26) * 10000);
+  // define globals
+  WiFi.mode(WIFI_STA);
+  wifi_status = WIFI_NOT_CONNECTED;
+  ip_address = "0.0.0.0";
 
-  pinMode(HOLD_PIN, INPUT);
-  pinMode(MSD_PIN, INPUT);
+  #if USB_DISPLAY == PICO_DISPLAY_2
+  selected = 0;
+  scroll = 60; // this value will have to be modified based on display size
+  lastbutton = 0;
+  BLACK = graphics.create_pen(0, 0, 0);
+  WHITE = graphics.create_pen(255, 255, 255);
+  COLOUR = graphics.create_pen(176, 196, 222);
+  /*
+  #elif USB_DISPLAY == CUSTOM_DISPLAY
+  selected = 0;
+  scroll = 60; // reasonable value for start of output
+  lastbutton = 0;
+  // also define your colours for use in draw_functions
+  */
+  #endif
 
-  pinMode(PIN_B0, INPUT);
-  pinMode(PIN_B1, INPUT);
-  pinMode(PIN_B2, INPUT);
-  pinMode(PIN_B3, INPUT);
-
-  byte program_index = get_program_index_from_pins();
-#ifdef DONT_USE_MSD_PIN
-  if (program_index == 0b1111) {
-#else
-  if (digitalRead(MSD_PIN) == HIGH) {
-#endif
-    usb_mass_storage = true;
-  } else {
-    Keyboard.begin();
-    Mouse.begin();
-  }
-
+  // init msc
   flash.begin();
-
-  if (usb_mass_storage) {
-    usb_msc.setID("Picoduck", "Internal Memory", "1.0");
-
-    usb_msc.setReadWriteCallback(msc_read_cb, msc_write_cb, msc_flush_cb);
-
-    usb_msc.setCapacity(flash.size() / 512, 512);
-
-    usb_msc.setUnitReady(true);
-    usb_msc.begin();
-  }
-
+  usb_msc.setID(DISK_LABEL, "USB Storage", "2.0");
+  usb_msc.setReadWriteCallback(msc_read_cb, msc_write_cb, msc_flush_cb);
+  usb_msc.setCapacity(flash.size() / 512, 512);
+  usb_msc.setUnitReady(true);
+  usb_msc.begin();
+  
+  // init fatfs
   fs_formatted = fatfs.begin(&flash);
+
+  // format_fat12(); // uncomment this line to confirm DISK_LABEL name change
+
   if (!fs_formatted) {
+    // if not formatted, format
     format_fat12();
-    
+
     fs_formatted = fatfs.begin(&flash);
     if (!fs_formatted) {
-      led_loop();
     }
   }
 
-  if (usb_mass_storage) {
-    digitalWrite(BUILT_IN_LED_PIN, HIGH);
-    return;
-  }
+  // init keyboard and mouse
+  Keyboard.begin();
+  Mouse.begin();
 
-  String program_code_path = String(program_index) + ".lua";
-
-  File32 file = fatfs.open(program_code_path.c_str(), FILE_READ);
-  if (!file)
-    led_loop(500);
-
-  char file_contents[file.available()+1] = { '\0' };
-  file.read(file_contents, file.available());
-  file.close();
-
-  fatfs.end();
-  flash.end();
-
-  lua_State *L = luaL_newstate();
-  if (L == 0)
-    return;
-
-  luaL_openlibs(L);
-
-  lua_settop(L, 0);
-
-  l_init(L);
-
-  luaL_loadstring(L, file_contents);
+  draw_blank_screen();
+  draw_navbar();
+  draw_output();
   
-  if (lua_pcall(L, 0, 0, 0) != 0) {
-    Serial.print("Lua error: ");
-    Serial.println(lua_tostring(L,-1));
-  } else {
-    Serial.println("Program ran successfully.");
+  // add ducky scripts to commands
+  File32 ducks = fatfs.open("ducks");
+  if (ducks) {
+    while (true) {
+      File32 duck = ducks.openNextFile();
+      if (!duck) break;
+      if (duck) {
+        char filename[FF_MAX_LFN + 1]; // since ducks/filename this shouldn't be an issue
+        duck.getName(filename, sizeof(filename));
+        duck.close();
+        const char *filename_c = filename;
+        std::string filename_s(filename_c);
+        commands[filename_s] = run_duck;
+      }
+    }
+    ducks.close();
   }
-}
+  draw_commands();
 
-void loop() { }
-
-void setup1() { }
-
-void loop1() {
-  hold = digitalRead(HOLD_PIN) == HIGH;
-}
-
-// fatfs diskio
-extern "C" {
-
-DSTATUS disk_status ( BYTE pdrv ) {
-  (void) pdrv;
-  return 0;
-}
-
-DSTATUS disk_initialize ( BYTE pdrv ) {
-  (void) pdrv;
-  return 0;
-}
-
-DRESULT disk_read (
-  BYTE pdrv,    // Physical drive nmuber to identify the drive
-  BYTE *buff,   // Data buffer to store read data
-  DWORD sector, // Start sector in LBA
-  UINT count    // Number of sectors to read
-) {
-  (void) pdrv;
-  return flash.readBlocks(sector, buff, count) ? RES_OK : RES_ERROR;
-}
-
-DRESULT disk_write (
-  BYTE pdrv,        // Physical drive nmuber to identify the drive
-  const BYTE *buff, // Data to be written
-  DWORD sector,     // Start sector in LBA
-  UINT count        // Number of sectors to write
-){
-  (void) pdrv;
-  return flash.writeBlocks(sector, buff, count) ? RES_OK : RES_ERROR;
-}
-
-DRESULT disk_ioctl (
-  BYTE pdrv,  // Physical drive nmuber (0..)
-  BYTE cmd,   // Control code
-  void *buff  // Buffer to send/receive control data
-) {
-  (void) pdrv;
-
-  switch ( cmd )
+  // run autorun command (and wait (AUTORUN_DELAY) seconds for host to register MSC)
+  if (autorun) 
   {
-    case CTRL_SYNC:
-      flash.syncBlocks();
-      return RES_OK;
+    File32 autorun_file = fatfs.open("autorun.txt", FILE_READ);
+    if (autorun_file) {
+      int length = autorun_file.available();
+      char contents[length+1] = { '\0' };
+      autorun_file.read(contents, length);
+      autorun_file.close();
 
-    case GET_SECTOR_COUNT:
-      *((DWORD*) buff) = flash.size()/512;
-      return RES_OK;
-
-    case GET_SECTOR_SIZE:
-      *((WORD*) buff) = 512;
-      return RES_OK;
-
-    case GET_BLOCK_SIZE:
-      *((DWORD*) buff) = 8;    // erase block size in units of sector size
-      return RES_OK;
-
-    default:
-      return RES_PARERR;
+      int command_start = 0;
+      int command_end = 0;
+      for (int i = 0; i < length; i++) {
+        if (contents[i] == ';') {
+          command_start = command_end;
+          command_end = i;
+        }
+      }
+      String autorun_command = String(contents).substring(command_start+1, command_end);
+      
+      if (commands.find(autorun_command.c_str()) != commands.end()) {
+        print("Autorun command found");
+        println(autorun_command.c_str());
+        delay(AUTORUN_DELAY);
+        // check if autorun_command ends in .dd
+        if (autorun_command.endsWith(".dd")) {
+          selected_duck = autorun_command.c_str();
+          run_duck();
+        }
+        else {
+          commands[autorun_command.c_str()]();
+        }
+      }
+      else
+        println("NO AUTORUN COMMAND");
+    }
+    else 
+      println("NO AUTORUN FILE");
   }
 }
 
+// loop
+void loop () { 
+  #if USB_DISPLAY == PICO_DISPLAY_2
+  if (pimoroni::millis() - lastbutton > DEBOUNCE)
+  {
+    if (button_a.raw()) {
+      if (selected == -1)
+      {
+        scroll -= 10;
+        draw_output(true);
+        lastbutton = pimoroni::millis() - 175;
+      }
+      else
+      {
+        print("Removed autorun");
+        File32 autorun = fatfs.open("autorun.txt", FILE_WRITE);
+        autorun.write(";_X_;", 5);
+        autorun.close();
+        lastbutton = pimoroni::millis();
+      }
+    }
+
+    if (button_b.raw()) {
+      if (selected == -1)
+      {
+        scroll += 10;
+        if (scroll > 210)
+          scroll = 210;
+        draw_output(true);
+        lastbutton = pimoroni::millis() - 175;
+      }
+      else {
+        print("Changed autorun to ");
+        auto it = commands.begin();
+        std::advance(it, selected);
+        println(it->first.c_str());
+
+        File32 autorun = fatfs.open("autorun.txt", FILE_WRITE);
+        autorun.write(";", 1);
+        autorun.write(it->first.c_str(), it->first.length());
+        autorun.write(";", 1);
+        autorun.close();        
+        lastbutton = pimoroni::millis();
+      }
+    }
+
+    if (button_x.raw()) {
+      if ((size_t) selected == (commands.size() - 1)) {
+        selected = -1;
+        draw_output(true);
+      }
+      else if (selected == -1) {
+        selected = 0;
+        draw_output(false);
+      }
+      else
+        selected++;
+      draw_commands();
+      lastbutton = pimoroni::millis();
+    }
+
+    if (button_y.raw()) {
+      if (selected != -1) {
+        auto it = commands.begin();
+        std::advance(it, selected);
+        // make sure none of your custom commands end in .dd! 
+        if (it->first.substr(it->first.length() - 3) == ".dd") {
+          selected_duck = it->first;
+          run_duck();
+        }
+        else {
+          it->second();
+        }
+        draw_commands();
+        lastbutton = pimoroni::millis();
+      }
+    }
+  }
+  /* 
+  #elif USB_DISPLAY == CUSTOM_DISPLAY
+  // define your button / loop code here
+  */
+  #endif
+}
+
+// standard display functions
+void draw_blank_screen(void) {
+  #if USB_DISPLAY == NO_DISPLAY
+  #else
+    graphics.clear();
+    graphics.set_pen(BLACK);
+    graphics.rectangle(Rect(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT));
+    display.update(&graphics);
+  #endif
+}
+void draw_navbar(void) {
+  #if USB_DISPLAY == NO_DISPLAY
+  #else
+    graphics.set_pen(COLOUR);
+    graphics.rectangle(Rect(0, 0, DISPLAY_WIDTH, int(DISPLAY_HEIGHT / 8)));
+    graphics.set_pen(BLACK);
+    graphics.text("PICOUSB", Point(5, 5), 50, 3);
+    graphics.set_pen(WHITE);
+    graphics.rectangle(Rect(120, 5, 3, 19));
+    graphics.set_pen(BLACK);
+    std::string message;
+    switch (wifi_status)
+    {
+      case WIFI_CHIP_ERROR:
+        message = "ERROR";
+        break;
+      case WIFI_FAILED:
+        message = "FAILED";
+        break;
+      case WIFI_CONNECTED:
+        message = ip_address;
+        break;
+      case WIFI_CONNECTING:
+        message = "CONNECTING";
+        break;
+      case WIFI_NOT_CONNECTED:
+        message = "NOT CONNECTED";
+        break;
+      default:
+        print("unknown wifi status");
+        message = "uknown";
+    }
+    graphics.text("WIFI: " + message, Point(130, 8), 200, 2);
+    display.update(&graphics);
+  /*
+  #elif USB_DISPLAY == CUSTOM_DISPLAY
+  // define your navbar code here
+  */
+  #endif
+}
+void draw_commands(void) {
+  #if USB_DISPLAY == NO_DISPLAY
+  #else
+    graphics.set_pen(WHITE);
+    graphics.text("COMMANDS", Point(5, 35), DISPLAY_WIDTH);
+    
+    int i = 0;
+    int offset = 0;
+    for (auto const& [key, val] : commands) {
+      if (i == selected) {
+        graphics.set_pen(COLOUR);
+      } 
+      else {
+        graphics.set_pen(WHITE);
+      }
+      graphics.text(key, Point(5, 60 + ((i + offset) * 15)), 100);
+      if (key.length() > 10)
+        offset++;
+      i++;
+    }
+      display.update(&graphics);
+  #endif
+}
+void draw_output(bool selected) {
+  #if USB_DISPLAY == NO_DISPLAY
+  #else
+    graphics.set_pen(BLACK);
+    graphics.rectangle(Rect(150, 30, 210, 210));
+    graphics.set_pen(WHITE);
+    graphics.rectangle(Rect(150, 50, 1, 180));
+    graphics.text("OUTPUT", Point(155, 35), DISPLAY_WIDTH);
+    graphics.set_pen(selected ? COLOUR : WHITE);
+    graphics.text(output, Point(155, scroll), 150, 1);
+    draw_navbar(); // navbar will update the graphics
+  #endif
+}
+
+// standard output functions
+void print(const char* text) {
+  output += text;
+  output += "\n";
+  draw_output();
+}
+void println(const char* text) {
+  output += text;
+  output += "\n\n";
+  draw_output();
+}
+
+// msc functions
+void format_fat12(void) {
+  uint8_t workbuf[4096];
+  FATFS elmchamFatfs;
+  FRESULT r = f_mkfs("", FM_FAT, 0, workbuf, sizeof(workbuf));
+  if (r != FR_OK)
+    while (1) yield();
+
+  r = f_mount(&elmchamFatfs, "0:", 1);
+  if (r != FR_OK)
+    while (1) yield();
+
+  r = f_setlabel(DISK_LABEL);
+  if (r != FR_OK)
+    while (1) yield();
+
+  f_unmount("0:");
+  flash.syncBlocks();
+}
+int32_t msc_read_cb(uint32_t lba, void *buffer, uint32_t bufsize) {
+  return flash.readBlocks(lba, (uint8_t *)buffer, bufsize / 512) ? bufsize : -1;
+}
+int32_t msc_write_cb(uint32_t lba, uint8_t *buffer, uint32_t bufsize) {
+  return flash.writeBlocks(lba, buffer, bufsize / 512) ? bufsize : -1;
+}
+void msc_flush_cb(void) {
+  flash.syncBlocks();
+  fatfs.cacheClear();
 }
