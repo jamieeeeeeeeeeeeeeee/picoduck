@@ -25,6 +25,7 @@ You can either use the pre-compiled .uf2 files (inside the build directory) or c
 8. Go to Tools->Manage Libraries and search for "Adafruit SPIFlash". Install the "Adafruit SPIFlash" library.
 
 **Now the Arduino IDE should be correctly setup!**
+
 9. Now you can plug your Pico into your computer in bootloader mode. You can use the Arduino IDE upload feature, or you can press Sketch -> Export Compiled Binary (CTRL+ALT+S) and manually drag and drop the compiled .uf2 file (inside build directory!) onto the Pico's drive.
 10. That's it! Your Pico will show as a USB device on your computer.
 
