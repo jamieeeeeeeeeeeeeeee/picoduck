@@ -17,7 +17,7 @@ You can either use the pre-compiled .uf2 files (inside the build directory) or c
 3. Open the Arduino IDE and go to File->Preferences and add the following URL to "Additional Boards Manager URLs": https://github.com/earlephilhower/arduino-pico/releases/download/global/package_rp2040_index.json. Hit "OK".
 4. Open the source code in the Arduino IDE by double clicking the picoduck.ino file.
 
-**Arduino IDE Setup - This is important to get right!**\
+**Arduino IDE Setup - This is important to get right!**
 
 5. Go to Tools->Board->Boards Manager and search for "Raspberry Pi Pico/RP2040". Install the "RP2040 Boards by earlephilhower" package
 6. Go to Tools->Board->Raspberry Pi Pico/RP2040 and select your board (Raspberry Pi Pico or Raspberry Pi Pico W)
