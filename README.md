@@ -35,17 +35,18 @@ Hit "OK".
 
 ## PICO DISPLAY 2 USAGE INSTRUCTIONS ##
 ```
-    +--------PICO DISPLAY 2---------+
-  A |PICOUSB      | WIFI: 0.0.0.0   | X
-    |-------------------------------|
-    |COMMANDS     | OUTPUT          |
-    |             |                 |
-    |notepad      | hi ....         |
-    |script.dd    | .....           |
-    |             |                 |
-  B |             |                 | Y
-    +--------------------------------+
+                +--------PICO DISPLAY 2---------+
+(SCRLL UP)    A |PICOUSB      | WIFI: 0.0.0.0   | X  (CYCLE)
+(RMV AUTORUN)   |-------------------------------|
+                |COMMANDS     | OUTPUT          |
+                |             |                 |
+                |notepad      | hello ....      |
+                |script.dd    | .....           |
+                |             |       ...  ..   |
+(SCRLL DWN)   B |             |                 | Y  (EXECUTE)
+(ADD AUTORUN   +--------------------------------+
 ```
+
 **Button A:**
 When a **COMMAND** is selected, the **AUTORUN** file will be cleared, so that no command is autoran on the next boot.
 
