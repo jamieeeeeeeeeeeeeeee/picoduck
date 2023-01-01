@@ -31,7 +31,7 @@ Hit "OK".
 9. Now you can plug your Pico into your computer in bootloader mode. You can use the Arduino IDE upload feature, or you can press Sketch -> Export Compiled Binary (CTRL+ALT+S) and manually drag and drop the compiled .uf2 file (inside build directory!) onto the Pico's drive.
 10. That's it! Your Pico will show as a USB device on your computer.
 
-## PICO DISPLAY 2 USAGE INSTRUCTIONS ##
+## Pico Display 2 Usage Instructions ##
 ```
     +--------PICO DISPLAY 2---------+
   A |PICOUSB      | WIFI: 0.0.0.0   | X  
