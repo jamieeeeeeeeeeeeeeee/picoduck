@@ -32,8 +32,29 @@ Hit "OK".
 10. That's it! Your Pico will show as a USB device on your computer.
 
 # Usage Instructions #
-## Source Code ##
-The source code is split into 4 main sections:
+## Pico Display 2 ##
+```
+    +--------PICO DISPLAY 2---------+
+  A |PICOUSB      | WIFI: 0.0.0.0   | X  
+    |-------------------------------|
+    |COMMANDS     | OUTPUT          |
+    |             |                 |
+    |notepad      | hello ....      |
+    |script.dd    | .....           |
+    |             |       ...  ..   |
+  B |             |                 | Y  
+    +--------------------------------+
+```
+
+| Button | Action if a Command is selected | Action if Output is selected |
+|--------|---------------------------------|------------------------------|
+| A      | Turn autorun off                | Scroll up                    |
+| B      | Turn autorun on (this command)  | Scroll down                  |
+| X      | Cycle (commands + output)       | Cycle   (commands + output)  |
+| Y      | Execute (this command)          | N/A                          |
+
+# Documentation #
+The project is split into 4 main sections:
 1. The main program (picoduck.ino)
 2. The DuckyScript interpreter (ducky.hpp)
 3. Custom commands, (C++ not Ducky, so you can do anything you want and access the Pico's hardware) (commands.hpp)
@@ -66,26 +87,3 @@ Unsupported commands:
 * DEL
 * DEFAULT_DELAY / DEFAULTDELAY
 * The Button / LED / ATTACKMODE / Logical Operations etc..
-
-
-## Pico Display 2 ##
-```
-    +--------PICO DISPLAY 2---------+
-  A |PICOUSB      | WIFI: 0.0.0.0   | X  
-    |-------------------------------|
-    |COMMANDS     | OUTPUT          |
-    |             |                 |
-    |notepad      | hello ....      |
-    |script.dd    | .....           |
-    |             |       ...  ..   |
-  B |             |                 | Y  
-    +--------------------------------+
-```
-
-| Button | Action if a Command is selected | Action if Output is selected |
-|--------|---------------------------------|------------------------------|
-| A      | Turn autorun off                | Scroll up                    |
-| B      | Turn autorun on (this command)  | Scroll down                  |
-| X      | Cycle (commands + output)       | Cycle   (commands + output)  |
-| Y      | Execute (this command)          | N/A                          |
-
