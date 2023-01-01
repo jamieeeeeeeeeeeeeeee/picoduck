@@ -32,7 +32,7 @@ Hit "OK".
 10. That's it! Your Pico will show as a USB device on your computer.
 
 # Usage Instructions #
-## Pico Display 2 ##
+### Pico Display 2 ###
 ```
     +--------PICO DISPLAY 2---------+
   A |PICOUSB      | WIFI: 0.0.0.0   | X  
