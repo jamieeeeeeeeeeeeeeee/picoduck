@@ -68,7 +68,7 @@ Unsupported commands:
 * The Button / LED / ATTACKMODE / Logical Operations etc..
 
 
-### Pico Display 2 Usage Instructions ###
+## Pico Display 2 ##
 ```
     +--------PICO DISPLAY 2---------+
   A |PICOUSB      | WIFI: 0.0.0.0   | X  
