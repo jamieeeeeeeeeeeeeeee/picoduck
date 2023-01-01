@@ -34,7 +34,7 @@ Hit "OK".
 10. That's it! Your Pico will show as a USB device on your computer.
 
 ## PICO DISPLAY 2 USAGE INSTRUCTIONS ##
-'
+```
     +--------PICO DISPLAY 2---------+
   A |PICOUSB      | WIFI: 0.0.0.0   | X
     |-------------------------------|
@@ -45,7 +45,7 @@ Hit "OK".
     |             |                 |
   B |             |                 | Y
     +--------------------------------+
-'
+```
 **Button A:**
 When a **COMMAND** is selected, the **AUTORUN** file will be cleared, so that no command is autoran on the next boot.
 
