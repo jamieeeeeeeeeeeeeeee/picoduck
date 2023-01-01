@@ -31,7 +31,44 @@ Hit "OK".
 9. Now you can plug your Pico into your computer in bootloader mode. You can use the Arduino IDE upload feature, or you can press Sketch -> Export Compiled Binary (CTRL+ALT+S) and manually drag and drop the compiled .uf2 file (inside build directory!) onto the Pico's drive.
 10. That's it! Your Pico will show as a USB device on your computer.
 
-## Pico Display 2 Usage Instructions ##
+# Usage Instructions #
+## Source Code ##
+The source code is split into 4 main sections:
+1. The main program (picoduck.ino)
+2. The DuckyScript interpreter (ducky.hpp)
+3. Custom commands, (C++ not Ducky, so you can do anything you want and access the Pico's hardware) (commands.hpp)
+4. **Configuration** (config.hpp)
+
+### The Main File (picoduck.ino) ###
+This main file which handles USB communication, autorunning scripts, the display, and buttons.
+
+### The DuckyScript Interpreter (ducky.hpp) ###
+This file interprets DuckyScripts and executes them. It uses this command list for reference > https://docs.hak5.org/hak5-usb-rubber-ducky/duckyscript-tm-quick-reference. 
+
+Supported commands are:
+* REM 
+* STRING / STRINGLN
+* UPARROW / DOWNARROW / LEFTARROW / RIGHTARROW
+* INSERT / DELETE / BACKSPACE
+* TAB + SPACE + ENTER +ESCAPE
+* PAUSE / BREAK
+* PRINTSCREEN
+* Function Keys (F1-F12)
+* SHIFT + ALT
+* CONTROL / CTRL
+* WINDOWS / GUI
+* CAPSLOCK + NUMSLOCK + SCROLLOCK
+* DELAY
+
+Unsupported commands:
+* MENU / APP 
+* MOUSE COMMANDS! Mouse support is implemented, but commands are not!
+* DEL
+* DEFAULT_DELAY / DEFAULTDELAY
+* The Button / LED / ATTACKMODE / Logical Operations etc..
+
+
+### Pico Display 2 Usage Instructions ###
 ```
     +--------PICO DISPLAY 2---------+
   A |PICOUSB      | WIFI: 0.0.0.0   | X  
