@@ -33,16 +33,16 @@ Hit "OK".
 
 ## PICO DISPLAY 2 USAGE INSTRUCTIONS ##
 ```
-                +--------PICO DISPLAY 2---------+
-(SCRLL UP)    A |PICOUSB      | WIFI: 0.0.0.0   | X  (CYCLE)
-(RMV AUTORUN)   |-------------------------------|
-                |COMMANDS     | OUTPUT          |
-                |             |                 |
-                |notepad      | hello ....      |
-                |script.dd    | .....           |
-                |             |       ...  ..   |
-(SCRLL DWN)   B |             |                 | Y  (EXECUTE)
-(ADD AUTORUN)   +--------------------------------+
+    +--------PICO DISPLAY 2---------+
+  A |PICOUSB      | WIFI: 0.0.0.0   | X  
+    |-------------------------------|
+    |COMMANDS     | OUTPUT          |
+    |             |                 |
+    |notepad      | hello ....      |
+    |script.dd    | .....           |
+    |             |       ...  ..   |
+  B |             |                 | Y  
+    +--------------------------------+
 ```
 
 | Button | Action if a Command is selected | Action if Output is selected |
