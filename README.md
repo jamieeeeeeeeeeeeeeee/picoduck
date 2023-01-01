@@ -2,7 +2,7 @@
 You can either use the pre-compiled .uf2 files (inside the build directory) or compile the source code yourself.
 
 ### Pre-compiled .uf2 files ###
-1. Download the correct .uf2 file for your hardware from the Releases tab. Pre-compiled .uf2 files are available for the following hardware:
+1. Download the correct .uf2 file for your hardware from the Releases tab. Pre-compiled .uf2 files support the following hardware combinations:
     * Pico + No Display
     * Pico + Pico Display 2
     * Picow + No Display
@@ -18,6 +18,7 @@ You can either use the pre-compiled .uf2 files (inside the build directory) or c
 4. Open the source code in the Arduino IDE by double clicking the picoduck.ino file.
 
 **Arduino IDE Setup - This is important to get right!**\
+
 5. Go to Tools->Board->Boards Manager and search for "Raspberry Pi Pico/RP2040". Install the "RP2040 Boards by earlephilhower" package
 6. Go to Tools->Board->Raspberry Pi Pico/RP2040 and select your board (Raspberry Pi Pico or Raspberry Pi Pico W)
 7. Go to Tools->USB Stack and select "Adafruit TinyUSB"
