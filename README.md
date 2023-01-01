@@ -62,5 +62,3 @@ e.g. notepad (**X**) script.dd (**X**) output (**X**) notepad
 **Button Y:** 
 When a **COMMAND** is selected, that command will be **autoran** on the next boot of the device.
 
-(Nothing happens when **OUTPUT** is selected.)
-
