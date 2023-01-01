@@ -4,8 +4,8 @@ You can either use the pre-compiled .uf2 files (inside the build directory) or c
 ### Pre-compiled .uf2 files ###
 1. Download the correct .uf2 file for your hardware from the Releases tab. Pre-compiled .uf2 files support the following hardware combinations:
     * Pico + No Display
-    * Pico + Pico Display 2
     * Picow + No Display
+    * Pico + Pico Display 2
     * Picow + Pico Display 2 
 2. Plug your Pico into your computer in bootloader mode.
 3. Drag and drop your chosen .uf2 file onto the Pico's drive.
