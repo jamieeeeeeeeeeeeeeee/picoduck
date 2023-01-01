@@ -1,5 +1,5 @@
 # Information #
-This project is a USB Rubber Ducky clone for the Raspberry Pi Pico. **!Please note that it currently relies on the Pimoroni Pico Display 2 - I am working on a version that does not require this!**
+This project is a USB Rubber Ducky clone for the Raspberry Pi Pico. **Please note that it currently relies on the Picow and having a Pimoroni Pico Display 2 - I am working on adding configuration options so you can use your own display, and the base Pico.
 
 # Installation Instructions #
 You can either use the pre-compiled .uf2 files (inside the build directory) or compile the source code yourself.
@@ -17,13 +17,13 @@ You can either use the pre-compiled .uf2 files (inside the build directory) or c
 ## Compiling the source code yourself ##
 1. Download the source code onto your computer.
 2. Download the Arduino IDE from https://www.arduino.cc/en/software
+
+**Arduino IDE Setup - This is important to get right!**
+
 3. Open the Arduino IDE and go to File->Preferences and add the following URL to "Additional Boards Manager URLs": 
 `https://github.com/earlephilhower/arduino-pico/releases/download/global/package_rp2040_index.json` 
 Hit "OK".
 4. Open the source code in the Arduino IDE by double clicking the picoduck.ino file.
-
-**Arduino IDE Setup - This is important to get right!**
-
 5. Go to Tools->Board->Boards Manager and search for "Raspberry Pi Pico/RP2040". Install the "RP2040 Boards by earlephilhower" package
 6. Go to Tools->Board->Raspberry Pi Pico/RP2040 and select your board (Raspberry Pi Pico or Raspberry Pi Pico W)
 7. Go to Tools->USB Stack and select "Adafruit TinyUSB"
@@ -61,7 +61,7 @@ The project is split into 4 main sections:
 1. The main program (picoduck.ino)
 2. The DuckyScript interpreter (ducky.hpp)
 3. Custom commands, (C++ not Ducky, so you can do anything you want and access the Pico's hardware) (commands.hpp)
-4. **Configuration** (config.hpp)
+4. Configuration (config.hpp)
 
 ### The Main File (picoduck.ino) ###
 This main file which handles USB communication, autorunning scripts, the display, and buttons.
@@ -90,3 +90,8 @@ Unsupported commands:
 * DEL
 * DEFAULT_DELAY / DEFAULTDELAY
 * The Button / LED / ATTACKMODE / Logical Operations etc..
+
+### Custom Commands (commands.hpp) ###
+Here you can write your own commands in C/C++ (these of course allow access to the Picos hardware, so can be more advanced than just DuckyScript). An example of this is connecting to WiFi.
+
+### Configuration ###
