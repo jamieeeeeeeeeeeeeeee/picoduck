@@ -15,7 +15,9 @@ You can either use the pre-compiled .uf2 files (inside the build directory) or c
 1. Download the source code onto your computer.
 2. Download the Arduino IDE from https://www.arduino.cc/en/software
 3. Open the Arduino IDE and go to File->Preferences and add the following URL to "Additional Boards Manager URLs": 
+
 `https://github.com/earlephilhower/arduino-pico/releases/download/global/package_rp2040_index.json` 
+
 Hit "OK".
 4. Open the source code in the Arduino IDE by double clicking the picoduck.ino file.
 
