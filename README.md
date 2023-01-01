@@ -45,20 +45,10 @@ Hit "OK".
 (ADD AUTORUN)   +--------------------------------+
 ```
 
-**Button A:**
-When a **COMMAND** is selected, the **AUTORUN** file will be cleared, so that no command is autoran on the next boot.
-
-When **OUTPUT** is selected, the output will scroll up.
-
-**Button B:**
-When a **COMMAND** is selected, that command will be **autoran** on the next boot of the device.
-
-When **OUTPUT** is selected, the output will scroll down.
-
-**Button X:** 
-This will cycle through **COMMANDS** and **OUTPUT**. (Down only)
-e.g. notepad (**X**) script.dd (**X**) output (**X**) notepad
-
-**Button Y:** 
-When a **COMMAND** is selected, that command will be **autoran** on the next boot of the device.
+| Button | Action if a Command is selected | Action if Output is selected |
+|--------|---------------------------------|------------------------------|
+| A      | Turn autorun off                | Scroll up                    |
+| B      | Turn autorun on (this command)  | Scroll down                  |
+| X      | Cycle (commands + output)       | Cycle   (commands + output)  |
+| Y      | Execute (this command)          | N/A                          |
 
