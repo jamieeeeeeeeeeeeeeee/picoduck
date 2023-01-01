@@ -1,5 +1,5 @@
 # Information #
-This project is a USB Rubber Ducky clone for the Raspberry Pi Picow. **Please note that it currently relies on the Picow and having a Pimoroni Pico Display 2 - I am working on adding configuration options so you can use your own display, and the base Pico.**
+This project is a USB Rubber Ducky clone for the Raspberry Pi Picow. **Please note that it currently relies on the Picow and having a Pimoroni Pico Display 2 - I am working on adding configuration options so you can use your own display (and no display!), and the base Pico.**
 
 # Installation Instructions #
 You can either use the pre-compiled .uf2 files (from the Releases tab) or compile the source code yourself.
@@ -36,6 +36,8 @@ Hit "OK".
 
 # Usage Instructions #
 ### General USB ###
+When you plug in your Pico (after flashing the .uf2 file), it will show as a USB HID (Human Interface Device) and a mass storage device.
+
 ### No Display ###
 ### Pico Display 2 ###
 ```
