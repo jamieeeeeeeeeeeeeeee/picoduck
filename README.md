@@ -99,4 +99,4 @@ Unsupported commands:
 Here you can write your own commands in C/C++ (these of course allow access to the Picos hardware, so can be more advanced than just DuckyScript). An example of this is connecting to WiFi.
 
 ### Configuration ###
-(No configuration added yet, other than turning the display off to do this change `#define USB_DISPLAY PICO_DISPLAY_2` to `#define USB_DISPLAY NO_DISPLAY`. (Inside the picousb.hpp file!) More to come!
+(No configuration added yet, other than turning the display off to do this change `#define USB_DISPLAY PICO_DISPLAY_2` to `#define USB_DISPLAY NO_DISPLAY`. (Inside the config.hpp file!) More to come!
