@@ -1,6 +1,3 @@
-# Acknowledgements # 
-Thanks to xslendik for providing the initial picoduck code!
-
 # Information #
 This project is a USB Rubber Ducky clone for the Raspberry Pi Picow. **Please note that it currently relies on the Picow and having a Pimoroni Pico Display 2 - I am working on adding configuration options so you can use your own display (and no display!), and the base Pico.**
 
@@ -103,3 +100,7 @@ Here you can write your own commands in C/C++ (these of course allow access to t
 
 ### Configuration ###
 (No configuration added yet, other than turning the display off to do this change `#define USB_DISPLAY PICO_DISPLAY_2` to `#define USB_DISPLAY NO_DISPLAY`. (Inside the config.hpp file!) More to come!
+
+# Acknowledgements # 
+**Thanks to @xslendik for providing the initial picoduck code!**
+
