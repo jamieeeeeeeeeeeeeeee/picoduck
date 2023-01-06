@@ -102,5 +102,5 @@ Here you can write your own commands in C/C++ (these of course allow access to t
 (No configuration added yet, other than turning the display off to do this change `#define USB_DISPLAY PICO_DISPLAY_2` to `#define USB_DISPLAY NO_DISPLAY`. (Inside the config.hpp file!) More to come!
 
 # Acknowledgements # 
-**Thanks to [@xslendik](https://github.com/xslendix/picoduck) for providing the initial picoduck code!**
+**Thanks to [xslendik](https://github.com/xslendix/picoduck) for providing the initial picoduck code!**
 
